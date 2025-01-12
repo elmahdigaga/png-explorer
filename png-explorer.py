@@ -21,4 +21,7 @@ def iterator(current, nb_bytes, data):
 
 # Get the signature (size: 8 bytes)
 signature_hex = iterator(0, 8, hex_data)
+if not signature_hex == "89504e470d0a1a0a":
+    print("Error: Invalid signature")
+    exit(1)
 print("Signature : ", signature_hex)
