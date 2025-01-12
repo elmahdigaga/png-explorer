@@ -23,7 +23,7 @@ class Chunk:
         self.entropy = 0 if (type == "IEND") else self.calculate_entropy(data)
 
     @staticmethod
-    def _reflect_crc(self, crc, width = 32):
+    def _reflect_crc(crc, width = 32):
         reflected = 0
         crc_value = int(crc, 16)
         for bit in range(width):
@@ -32,7 +32,7 @@ class Chunk:
         return reflected
     
     @staticmethod
-    def _calculate_entropy(self, data):
+    def _calculate_entropy(data):
         if not data:
             return 0
         counter = Counter(data)
