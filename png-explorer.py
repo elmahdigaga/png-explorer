@@ -14,6 +14,7 @@ class Chunk:
         self.entropy = 0 if (type == "IEND") else self._calculate_entropy(data)
 
     @staticmethod
+    # The reflected CRC is the bits of the CRC value reversed (reflected)
     def _reflect_crc(crc, width = 32):
         reflected = 0
         crc_value = int(crc, 16)
@@ -23,6 +24,7 @@ class Chunk:
         return reflected
     
     @staticmethod
+    # The entropy measures the randomness of data
     def _calculate_entropy(data):
         if not data:
             return 0
@@ -43,7 +45,7 @@ def iterator(pointer, nb_bytes, data):
 
 def extract_chunks(data):
     chunks = []
-    pointer = 16
+    pointer = 16 # Beginning of chunks after signature (size: 8 bytes)
     while True:
         # Get the chunk data length (size: 4 bytes)
         data_length_hex, pointer = iterator(pointer, 4, data)
