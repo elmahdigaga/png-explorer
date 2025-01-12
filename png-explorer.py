@@ -1,7 +1,7 @@
 import os
 import sys
 import math
-from typing import Counter
+from collections import Counter
 
 
 if sys.argv.count == 2:
@@ -22,7 +22,8 @@ class Chunk:
         self.crc_ref = self.reflect_crc(crc)
         self.entropy = 0 if (type == "IEND") else self.calculate_entropy(data)
 
-    def reflect_crc(self, crc, width = 32):
+    @staticmethod
+    def _reflect_crc(self, crc, width = 32):
         reflected = 0
         crc_value = int(crc, 16)
         for bit in range(width):
@@ -30,18 +31,17 @@ class Chunk:
             crc_value >>= 1
         return reflected
     
-    def calculate_entropy(self, data):
+    @staticmethod
+    def _calculate_entropy(self, data):
         if not data:
             return 0
-        
         counter = Counter(data)
         total = len(data)
         # Shannon's formula for calculating the entropy
-        entropy = -sum((count / total) * math.log2(count / total) for count in counter.values())
-        return entropy
+        return -sum((count / total) * math.log2(count / total) for count in counter.values())
     
     def __str__(self):
-        return f"{self.type}, {self.data_length}, {self.crc}, {self.crc_ref}, {self.entropy}"
+        return f"{self.type}, {self.data_length}, {self.crc}, {self.crc_ref}, {self.entropy:.2f}"
 
 
 def iterator(current, nb_bytes, data):
@@ -50,7 +50,7 @@ def iterator(current, nb_bytes, data):
     current = stop
     return data[start:stop], current
 
-def get_chunks(data, current):
+def extract_chunks(data, current):
     chunks = []
     while True:
         # Get the chunk data length (size: 4 bytes)
@@ -87,7 +87,7 @@ if not signature_hex == "89504e470d0a1a0a":
     exit(1)
 
 
-chunks = get_chunks(hex_data, current)
+chunks = extract_chunks(hex_data, current)
 print("type, size, CRC, CRC_ref, entropy")
 for chunk in chunks:
     print(chunk)
