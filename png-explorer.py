@@ -1,5 +1,7 @@
 import os
 import sys
+import math
+from typing import Counter
 
 if sys.argv.count == 2:
     png_path = sys.argv[1]
@@ -59,3 +61,17 @@ def reflect_crc(crc, width = 32):
 # Get the reflected CRC
 crc_ref_hex = hex(reflect_crc(crc_hex))
 print("Chunk's reflected CRC : " + crc_ref_hex)
+
+def calculate_entropy(data):
+    if not data:
+        return 0
+    
+    counter = Counter(data)
+    total = len(data)
+    # Shannon's formula for calculating the entropy
+    entropy = -sum((count / total) * math.log2(count / total) for count in counter.values())
+    return entropy
+
+# Get chunk data's entropy
+entropy = calculate_entropy(data_hex)
+print("Chunk data's entropy : ", entropy)
