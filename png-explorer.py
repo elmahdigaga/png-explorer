@@ -13,30 +13,42 @@ if not os.path.isfile(png_path):
     print("Error: File not found")
     exit(1)
 
+class Chunk:
+    def __init__(self, type, length, data, crc):
+        self.type = type
+        self.length = length
+        self.data = data
+        self.crc = crc
+        self.crc_ref = self.reflect_crc(crc)
+        self.entropy = self.calculate_entropy(data)
+
+    def reflect_crc(self, crc, width = 32):
+        reflected = 0
+        crc_value = int(crc, 16)
+        for bit in range(width):
+            reflected = (reflected << 1) | (crc_value & 1)
+            crc_value >>= 1
+        return reflected
+    
+    def calculate_entropy(self, data):
+        if not data:
+            return 0
+        
+        counter = Counter(data)
+        total = len(data)
+        # Shannon's formula for calculating the entropy
+        entropy = -sum((count / total) * math.log2(count / total) for count in counter.values())
+        return entropy
+    
+    def __str__(self):
+        return f"{self.type}, {self.length}, {self.crc}, {self.crc_ref}, {entropy}"
+
 
 def iterator(current, nb_bytes, data):
     start = current
     stop = current + (nb_bytes * 2)
     current = stop
     return data[start:stop], current
-
-def reflect_crc(crc, width = 32):
-    reflected = 0
-    crc_value = int(crc, 16)
-    for bit in range(width):
-        reflected = (reflected << 1) | (crc_value & 1)
-        crc_value >>= 1
-    return reflected
-
-def calculate_entropy(data):
-    if not data:
-        return 0
-    
-    counter = Counter(data)
-    total = len(data)
-    # Shannon's formula for calculating the entropy
-    entropy = -sum((count / total) * math.log2(count / total) for count in counter.values())
-    return entropy
 
 
 with open(png_path, "rb") as f:
