@@ -40,3 +40,10 @@ print("Chunk data length : ", data_length)
 type_hex, current = iterator(current, 4, hex_data)
 type = bytes.fromhex(type_hex).decode()
 print("Chunk type : ", type)
+
+# skip the chunk data (size: indicated by the chunk data length)
+data_hex, current = iterator(current, data_length, hex_data)
+
+# Get the chunk CRC (size: 4 bytes)
+crc_hex, current = iterator(current, 4, hex_data)
+print("Chunk CRC : 0x" + crc_hex)
