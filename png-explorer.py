@@ -14,13 +14,13 @@ if not os.path.isfile(png_path):
     exit(1)
 
 class Chunk:
-    def __init__(self, type, length, data, crc):
+    def __init__(self, type, data_length, data, crc):
         self.type = type
-        self.length = length
+        self.data_length = data_length
         self.data = data
         self.crc = crc
         self.crc_ref = self.reflect_crc(crc)
-        self.entropy = self.calculate_entropy(data)
+        self.entropy = 0 if (type == "IEND") else self.calculate_entropy(data)
 
     def reflect_crc(self, crc, width = 32):
         reflected = 0
@@ -41,7 +41,7 @@ class Chunk:
         return entropy
     
     def __str__(self):
-        return f"{self.type}, {self.length}, {self.crc}, {self.crc_ref}, {entropy}"
+        return f"{self.type}, {self.data_length}, {self.crc}, {self.crc_ref}, {self.entropy}"
 
 
 def iterator(current, nb_bytes, data):
@@ -49,6 +49,31 @@ def iterator(current, nb_bytes, data):
     stop = current + (nb_bytes * 2)
     current = stop
     return data[start:stop], current
+
+def get_chunks(data, current):
+    chunks = []
+    while True:
+        # Get the chunk data length (size: 4 bytes)
+        data_length_hex, current = iterator(current, 4, data)
+        data_length = int(data_length_hex, 16)
+
+        # Get the chunk type (size: 4 bytes)
+        type_hex, current = iterator(current, 4, hex_data)
+        type = bytes.fromhex(type_hex).decode()
+
+        # Get the chunk data (size: indicated by the chunk data length)
+        data_hex, current = iterator(current, data_length, hex_data)
+
+        # Get the chunk CRC (size: 4 bytes)
+        crc_hex, current = iterator(current, 4, hex_data)
+
+        chunk = Chunk(type, data_length, data_hex, crc_hex)
+        chunks.append(chunk)
+
+        # If END OF FILE detected, break the loop
+        if type == "IEND":
+            break
+    return chunks
 
 
 with open(png_path, "rb") as f:
@@ -62,32 +87,7 @@ if not signature_hex == "89504e470d0a1a0a":
     exit(1)
 
 
-### CHUNK: 4 bytes: length | 4 bytes: Type | x bytes: Data | 4 bytes: CRC
+chunks = get_chunks(hex_data, current)
 print("type, size, CRC, CRC_ref, entropy")
-while True:
-    # Get the chunk data length (size: 4 bytes)
-    data_length_hex, current = iterator(current, 4, hex_data)
-    data_length = int(data_length_hex, 16)
-
-    # Get the chunk type (size: 4 bytes)
-    type_hex, current = iterator(current, 4, hex_data)
-    type = bytes.fromhex(type_hex).decode()
-
-    # Get the chunk data (size: indicated by the chunk data length)
-    data_hex, current = iterator(current, data_length, hex_data)
-
-    # Get the chunk CRC (size: 4 bytes)
-    crc_hex, current = iterator(current, 4, hex_data)
-
-    # Get the reflected CRC
-    crc_ref_hex = hex(reflect_crc(crc_hex))
-    
-    # If END OF FILE detected, break the loop
-    if type == "IEND":
-        print(type, ",", 0, ",", "0x"+crc_hex, ",", crc_ref_hex, ",", 0)
-        break
-
-    # Get chunk data's entropy
-    entropy = calculate_entropy(data_hex)
-
-    print(type, ",", data_length, ",", "0x"+crc_hex, ",", crc_ref_hex, ",", entropy)
+for chunk in chunks:
+    print(chunk)
