@@ -11,12 +11,14 @@ if not os.path.isfile(png_path):
     exit(1)
 
 with open(png_path, "rb") as f:
-    hexData = f.read().hex()
+    hex_data = f.read().hex()
 
-print(hexData)
-
-def iterator(current, start, stop, nb_bytes, data):
+def iterator(current, nb_bytes, data):
     start = current
     stop = current + (nb_bytes * 2)
     current = stop
     return data[start:stop]
+
+# Get the signature (size: 8 bytes)
+signature_hex = iterator(0, 8, hex_data)
+print("Signature : ", signature_hex)
