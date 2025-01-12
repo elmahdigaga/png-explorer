@@ -35,3 +35,8 @@ print("Signature : ", signature_hex)
 data_length_hex, current = iterator(current, 4, hex_data)
 data_length = int(data_length_hex, 16)
 print("Chunk data length : ", data_length)
+
+# Get the chunk type (size: 4 bytes)
+type_hex, current = iterator(current, 4, hex_data)
+type = bytes.fromhex(type_hex).decode()
+print("Chunk type : ", type)
