@@ -47,3 +47,15 @@ data_hex, current = iterator(current, data_length, hex_data)
 # Get the chunk CRC (size: 4 bytes)
 crc_hex, current = iterator(current, 4, hex_data)
 print("Chunk CRC : 0x" + crc_hex)
+
+def reflect_crc(crc, width = 32):
+    reflected = 0
+    crc_value = int(crc, 16)
+    for bit in range(width):
+        reflected = (reflected << 1) | (crc_value & 1)
+        crc_value >>= 1
+    return reflected
+
+# Get the reflected CRC
+crc_ref_hex = hex(reflect_crc(crc_hex))
+print("Chunk's reflected CRC : " + crc_ref_hex)
