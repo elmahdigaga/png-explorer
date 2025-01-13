@@ -2,6 +2,32 @@
 
 A simple python program to read chunks from a png file
 
+## Research
+
+The first step was to understand the structure of a png file and how its data is organized. For this, I used the [PNG specification](https://en.wikipedia.org/wiki/PNG#File_format).
+
+The result of the search was the following:
+
+-   A PNG file always starts with a signature that identifies the image as PNG, which is always equal to the value `89 50 4E 47 0D 0A 1A 0A` (size: 8 bytes)
+
+-   Each chunk contains 4 fields : `the data length` | `the chunk type` | `the chunk data` | `CRC`
+
+    -   **Data Length**: A 4 bytes value representing the size of the chunk data
+    -   **Type**: A 4 bytes value representing the type of the chunk (IHDR, IDAT...)
+    -   **Data**: A variable size field that contains the bytes of the image
+    -   **CRC**: A network-byte-order CRC-32 computed over the chunk type and chunk data
+
+-   **Reflected CRC**: refers to a variation where the bits of the CRC value are reversed (reflected) before being used or transmitted.
+
+-   **[Entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)>)** measures the randomness of data. You can calculate it using Shannon's formula:
+    $`H = - \sum_{i} p_i \log_2 p_i​`$
+
+    Where $`p_i`$​ is the probability of each symbol in the data.
+
+Visual representation of a png file structure:
+
+<img src="https://www.researchgate.net/profile/Ciprian-Pungila/publication/319954837/figure/fig58/AS:631660466929671@1527610999985/An-example-of-the-PNG-image-file-header-footer-and-contents-as-discussed-by-Kloet-in.png" alt="png file strucutre" width="500"/>
+
 ## Installation
 
 ### Prerequisites
