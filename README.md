@@ -26,7 +26,7 @@ The result of the search was the following:
 
 Visual representation of a png file structure:
 
-<img src="https://www.researchgate.net/profile/Ciprian-Pungila/publication/319954837/figure/fig58/AS:631660466929671@1527610999985/An-example-of-the-PNG-image-file-header-footer-and-contents-as-discussed-by-Kloet-in.png" alt="png file strucutre" width="500"/>
+<img src="png-file-structure.jpg" alt="png file strucutre" width="500"/>
 
 ## Installation
 
