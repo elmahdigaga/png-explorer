@@ -10,7 +10,7 @@ class Chunk:
         self.data_length = data_length
         self.data = data
         self.crc = crc
-        self.crc_ref = self._reflect_crc(crc)
+        self.crc_ref = hex(self._reflect_crc(crc))
         self.entropy = 0 if (type == "IEND") else self._calculate_entropy(data)
 
     @staticmethod
@@ -34,7 +34,7 @@ class Chunk:
         return -sum((count / total) * math.log2(count / total) for count in counter.values())
     
     def __str__(self):
-        return f"{self.type}, {self.data_length}, {self.crc}, {self.crc_ref}, {self.entropy:.2f}"
+        return f"{self.type}, {self.data_length}, 0x{self.crc}, {self.crc_ref}, {self.entropy:.2f}"
 
 
 def iterator(pointer, nb_bytes, data):
